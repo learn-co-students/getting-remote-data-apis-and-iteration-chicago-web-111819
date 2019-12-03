@@ -10,16 +10,10 @@ def get_character_movies_from_api(character_name)
   # prime suspect: response_hash["results"][0]["films"] => returns an array of urls
   # suspect 2 (films): RestClient.get(response_hash["results"][0]["films"][0])
 
-  films = []
-  response_hash["results"].each { |r|
-    if r["name"].downcase == character_name
-     r["films"].each { |url|
-        films << JSON.parse(RestClient.get(url))
-      }
-    end
+  
+  get_character_hash(response_hash,character_name)["films"].map { |url| 
+    JSON.parse(RestClient.get(url))
   }
-
-  films
 
 
 
@@ -40,7 +34,6 @@ def print_movies(films)
   # some iteration magic and puts out the movies in a nice list
   films.each { |f|
     puts f["title"]
-    # binding
   }
 end
 
@@ -50,6 +43,10 @@ def show_character_movies(character)
 end
 
 ## BONUS
-
+def get_character_hash(response_hash,character)
+  response_hash["results"].find { |r|
+    r["name"].downcase == character
+  }
+end
 # that `get_character_movies_from_api` method is probably pretty long. Does it do more than one job?
 # can you split it up into helper methods?
