@@ -9,6 +9,18 @@ def get_character_movies_from_api(character_name)
   response_string = RestClient.get('http://swapi.dev/api/people')
   response_hash = JSON.parse(response_string)
 
+  # prime suspect: response_hash["results"][0]["films"] => returns an array of urls
+  # suspect 2 (films): RestClient.get(response_hash["results"][0]["films"][0])
+
+  
+  get_character_hash(response_hash,character_name)["films"].map { |url| 
+    JSON.parse(RestClient.get(url))
+  }
+
+
+
+
+
   # iterate over the response hash to find the collection of `films` for the given
   #   `character`
   # collect those film API urls, make a web request to each URL to get the info
@@ -22,6 +34,9 @@ end
 
 def print_movies(films)
   # some iteration magic and puts out the movies in a nice list
+  films.each { |f|
+    puts f["title"]
+  }
 end
 
 def show_character_movies(character)
@@ -30,6 +45,10 @@ def show_character_movies(character)
 end
 
 ## BONUS
-
+def get_character_hash(response_hash,character)
+  response_hash["results"].find { |r|
+    r["name"].downcase == character
+  }
+end
 # that `get_character_movies_from_api` method is probably pretty long. Does it do more than one job?
 # can you split it up into helper methods?
